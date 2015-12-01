@@ -26,6 +26,7 @@ wait_for_keystone
 
 echo "Creating neutron user and giving it admin role under service tenant."
 openstack user create \
+    --domain default  \
     --password "$neutron_admin_password" \
     "$neutron_admin_user"
 
@@ -41,24 +42,33 @@ openstack service create \
     network
 
 openstack endpoint create \
-    --publicurl http://controller-api:9696 \
-    --adminurl http://controller-mgmt:9696 \
-    --internalurl http://controller-mgmt:9696 \
     --region "$REGION" \
-    network
+    "$neutron_admin_user" \
+    public http://controller-api:9696
+
+openstack endpoint create \
+    --region "$REGION" \
+    "$neutron_admin_user" \
+    internal http://controller-mgmt:9696
+
+openstack endpoint create \
+    --region "$REGION" \
+    "$neutron_admin_user" \
+    public http://controller-mgmt:9696
 
 echo "Installing neutron for controller node."
 sudo apt-get install -y \
-    neutron-server neutron-plugin-ml2 python-neutronclient
+    neutron-server neutron-plugin-ml2 \
+    neutron-plugin-linuxbridge-agent neutron-dhcp-agent \
+    neutron-metadata-agent python-neutronclient
 
 echo "Configuring neutron for controller node."
-
 function get_database_url {
     local db_user=$(service_to_db_user neutron)
     local db_password=$(service_to_db_password neutron)
     local database_host=controller-mgmt
 
-    echo "mysql://$db_user:$db_password@$database_host/neutron"
+    echo "mysql+pymysql://$db_user:$db_password@$database_host/neutron"
 }
 
 database_url=$(get_database_url)
@@ -67,7 +77,8 @@ echo "Setting database connection: $database_url."
 conf=/etc/neutron/neutron.conf
 iniset_sudo $conf database connection "$database_url"
 
-# Configure AMQP parameters
+iniset_sudo $conf DEFAULT core_plugin ml2
+iniset_sudo $conf DEFAULT service_plugins ""
 iniset_sudo $conf DEFAULT rpc_backend rabbit
 
 iniset_sudo $conf oslo_messaging_rabbit rabbit_host controller-mgmt
@@ -86,14 +97,6 @@ iniset_sudo $conf keystone_authtoken user_domain_id default
 iniset_sudo $conf keystone_authtoken project_name "$SERVICE_PROJECT_NAME"
 iniset_sudo $conf keystone_authtoken username "$neutron_admin_user"
 iniset_sudo $conf keystone_authtoken password "$neutron_admin_password"
-iniset_sudo $conf keystone_authtoken admin_tenant_name "$SERVICE_PROJECT_NAME"
-iniset_sudo $conf keystone_authtoken admin_user "$neutron_admin_user"
-iniset_sudo $conf keystone_authtoken admin_password "$neutron_admin_password"
-
-# Configure network plugin parameters
-iniset_sudo $conf DEFAULT core_plugin ml2
-iniset_sudo $conf DEFAULT service_plugins router
-iniset_sudo $conf DEFAULT allow_overlapping_ips True
 
 nova_admin_user=$(service_to_user_name nova)
 nova_admin_password=$(service_to_user_password nova)
@@ -113,21 +116,58 @@ iniset_sudo $conf nova username "$nova_admin_user"
 iniset_sudo $conf nova password "$nova_admin_password"
 iniset_sudo $conf DEFAULT verbose True
 
-echo "Configuring the OVS plug-in to use GRE tunneling."
+echo "Configuring the Modular Layer 2 (ML2) plug-in."
 conf=/etc/neutron/plugins/ml2/ml2_conf.ini
 
 # Edit the [ml2] section.
-iniset_sudo $conf ml2 type_drivers flat,vlan,gre,vxlan
-iniset_sudo $conf ml2 tenant_network_types gre
-iniset_sudo $conf ml2 mechanism_drivers openvswitch
+iniset_sudo $conf ml2 type_drivers flat,vlan
+iniset_sudo $conf ml2 tenant_network_types ""
+iniset_sudo $conf ml2 mechanism_drivers linuxbridge
+iniset_sudo $conf ml2 extension_drivers port_security
 
-# Edit the [ml2_type_gre] section.
-iniset_sudo $conf ml2_type_gre tunnel_id_ranges 1:1000
+# Edit the [ml2_type_flat] section.
+iniset_sudo $conf ml2_type_flat flat_networks public
+
+# Edit the [securitygroup] section.
+iniset_sudo $conf securitygroup enable_ipset True
+
+# Configure the linuxbridge_agent.ini file.
+echo "Configuring Linux Bridge agent"
+conf=/etc/neutron/plugins/ml2/linuxbridge_agent.ini
+
+# Edit the [linux_bridge] section.
+iniset_sudo $conf linux_bridge physical_interface_mappings public:eth2
+
+# Edit the [vxlan] section.
+iniset_sudo $conf vxlan enable_vxlan False
+
+# Edit the [agent] section.
+iniset_sudo $conf agent prevent_arp_spoofing True
 
 # Edit the [securitygroup] section.
 iniset_sudo $conf securitygroup enable_security_group True
-iniset_sudo $conf securitygroup enable_ipset True
-iniset_sudo $conf securitygroup firewall_driver neutron.agent.linux.iptables_firewall.OVSHybridIptablesFirewallDriver
+iniset_sudo $conf securitygroup firewall_driver neutron.agent.linux.iptables_firewall.IptablesFirewallDriver
+
+echo "Configure DHCP agent"
+conf=/etc/neutron/dhcp_agent.ini
+iniset_sudo $conf DEFAULT interface_driver neutron.agent.linux.interface.BridgeInterfaceDriver
+iniset_sudo $conf DEFAULT dhcp_driver neutron.agent.linux.dhcp.Dnsmasq
+iniset_sudo $conf DEFAULT enable_isolated_metadata True
+iniset_sudo $conf DEFAULT verbose True
+
+echo "Configure the metadata agent"
+conf=/etc/neutron/metadata_agent.ini
+iniset_sudo $conf DEFAULT auth_uri http://controller-mgmt:5000
+iniset_sudo $conf DEFAULT auth_url http://controller-mgmt:35357
+iniset_sudo $conf DEFAULT auth_region "$REGION"
+iniset_sudo $conf DEFAULT auth_plugin password
+iniset_sudo $conf DEFAULT project_domain_id default
+iniset_sudo $conf DEFAULT user_domain_id default
+iniset_sudo $conf DEFAULT project_name "$SERVICE_PROJECT_NAME"
+iniset_sudo $conf DEFAULT username "$neutron_admin_user"
+iniset_sudo $conf DEFAULT password "$neutron_admin_password"
+
+
 
 echo "Configure Compute to use Networking"
 conf=/etc/nova/nova.conf

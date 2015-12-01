@@ -15,25 +15,10 @@ indicate_current_auto
 # http://docs.openstack.org/kilo/install-guide/install/apt/content/ceilometer-controller-install.html
 #------------------------------------------------------------------------------
 
-echo "Setting up database for telemetry."
+echo "Sourcing the admin credentials."
+source "$CONFIG_DIR/admin-openstackrc.sh"
 
-echo "Installing the MongoDB packages."
-sudo apt-get install -y mongodb-server mongodb-clients python-pymongo
-
-echo "Configuring mongodb.conf."
-conf=/etc/mongodb.conf
-iniset_sudo_no_section $conf bind_ip "$(hostname_to_ip controller-mgmt)"
-iniset_sudo_no_section $conf smallfiles true
-
-echo "Restarting mongodb."
-sudo service mongodb restart
-
-echo -n "Waiting for mongodb to start."
-while sudo service mongodb status 2>/dev/null | grep "stop"; do
-    sleep 5
-    echo -n .
-done
-
+# Create Ceilometer user and database.
 ceilometer_admin_user=$(service_to_user_name ceilometer)
 ceilometer_admin_password=$(service_to_user_password ceilometer)
 
@@ -47,8 +32,8 @@ mongo --host "$(hostname_to_ip controller-mgmt)" --eval "
     pwd: \"${mongodb_password}\",
     roles: [ \"readWrite\", \"dbAdmin\" ]})"
 
-echo "Sourcing the admin credentials."
-source "$CONFIG_DIR/admin-openstackrc.sh"
+
+
 
 echo "Creating ceilometer user and giving it admin role under service tenant."
 openstack user create \

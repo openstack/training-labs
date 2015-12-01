@@ -3,7 +3,6 @@ set -o errexit -o nounset
 TOP_DIR=$(cd "$(dirname "$0")/.." && pwd)
 source "$TOP_DIR/config/paths"
 source "$CONFIG_DIR/credentials"
-# Get REGION
 source "$CONFIG_DIR/openstack"
 source "$LIB_DIR/functions.guest.sh"
 
@@ -13,7 +12,7 @@ indicate_current_auto
 
 #------------------------------------------------------------------------------
 # Set up keystone for controller node
-# http://docs.openstack.org/kilo/install-guide/install/apt/content/keystone-install.html
+# http://docs.openstack.org/liberty/install-guide-ubuntu/keystone-install.html
 #------------------------------------------------------------------------------
 
 echo "Setting up database for keystone."
@@ -29,8 +28,11 @@ echo "$ADMIN_TOKEN"
 echo "Disabling the keystone service from starting automatically after installation."
 echo "manual" | sudo tee /etc/init/keystone.override
 
+echo "Installing python openstack client"
+sudo apt-get install -y python-openstackclient
+
 echo "Installing keystone."
-sudo apt-get install -y keystone python-openstackclient apache2 \
+sudo apt-get install -y keystone  apache2 \
     libapache2-mod-wsgi memcached python-memcache
 
 conf=/etc/keystone/keystone.conf
@@ -44,7 +46,7 @@ function get_database_url {
     local db_password=$(service_to_db_password keystone)
     local database_host=controller-mgmt
 
-    echo "mysql://$db_user:$db_password@$database_host/keystone"
+    echo "mysql+pymysql://$db_user:$db_password@$database_host/keystone"
 }
 
 database_url=$(get_database_url)
@@ -59,15 +61,16 @@ echo "Configuring the Memcache service."
 iniset_sudo $conf memcache servers localhost:11211
 
 echo "Configuring the UUID token provider and SQL driver."
-iniset_sudo $conf token provider keystone.token.providers.uuid.Provider
-iniset_sudo $conf token driver keystone.token.persistence.backends.memcache.Token
+iniset_sudo $conf token provider uuid
+iniset_sudo $conf token driver memcache
 
 echo "Configuring the SQL revocation driver."
-iniset_sudo $conf revoke driver keystone.contrib.revoke.backends.sql.Revoke
+iniset_sudo $conf revoke driver sql
 
 echo "Enabling verbose logging."
 iniset_sudo $conf DEFAULT verbose True
 
+# XXX This should be done as user "keystone"
 echo "Creating the database tables for keystone."
 sudo keystone-manage db_sync
 
@@ -82,55 +85,61 @@ Listen 5000
 Listen 35357
 
 <VirtualHost *:5000>
-    WSGIDaemonProcess keystone-public processes=5 threads=1 user=keystone display-name=%{GROUP}
+    WSGIDaemonProcess keystone-public processes=5 threads=1 user=keystone group=keystone display-name=%{GROUP}
     WSGIProcessGroup keystone-public
-    WSGIScriptAlias / /var/www/cgi-bin/keystone/main
+    WSGIScriptAlias / /usr/bin/keystone-wsgi-public
     WSGIApplicationGroup %{GLOBAL}
     WSGIPassAuthorization On
     <IfVersion >= 2.4>
       ErrorLogFormat "%{cu}t %M"
     </IfVersion>
-    LogLevel info
-    ErrorLog /var/log/apache2/keystone-error.log
-    CustomLog /var/log/apache2/keystone-access.log combined
+    ErrorLog /var/log/apache2/keystone.log
+    CustomLog /var/log/apache2/keystone_access.log combined
+
+    <Directory /usr/bin>
+        <IfVersion >= 2.4>
+            Require all granted
+        </IfVersion>
+        <IfVersion < 2.4>
+            Order allow,deny
+            Allow from all
+        </IfVersion>
+    </Directory>
 </VirtualHost>
 
 <VirtualHost *:35357>
-    WSGIDaemonProcess keystone-admin processes=5 threads=1 user=keystone display-name=%{GROUP}
+    WSGIDaemonProcess keystone-admin processes=5 threads=1 user=keystone group=keystone display-name=%{GROUP}
     WSGIProcessGroup keystone-admin
-    WSGIScriptAlias / /var/www/cgi-bin/keystone/admin
+    WSGIScriptAlias / /usr/bin/keystone-wsgi-admin
     WSGIApplicationGroup %{GLOBAL}
     WSGIPassAuthorization On
     <IfVersion >= 2.4>
       ErrorLogFormat "%{cu}t %M"
     </IfVersion>
-    LogLevel info
-    ErrorLog /var/log/apache2/keystone-error.log
-    CustomLog /var/log/apache2/keystone-access.log combined
+    ErrorLog /var/log/apache2/keystone.log
+    CustomLog /var/log/apache2/keystone_access.log combined
+
+    <Directory /usr/bin>
+        <IfVersion >= 2.4>
+            Require all granted
+        </IfVersion>
+        <IfVersion < 2.4>
+            Order allow,deny
+            Allow from all
+        </IfVersion>
+    </Directory>
 </VirtualHost>
+
 WSGI
 
 echo "Enabling the identity service virtual hosts."
 sudo ln -s /etc/apache2/sites-available/wsgi-keystone.conf /etc/apache2/sites-enabled
-
-echo "Creating the directory structure for WSGI components."
-sudo mkdir -p /var/www/cgi-bin/keystone
-
-echo "Copying WSGI component from upstream repository."
-# Note: Since we have offline installation, use pre-cached files.
-cat "$HOME/keystone.py" | sudo tee /var/www/cgi-bin/keystone/main /var/www/cgi-bin/keystone/admin
-
-echo "Adjusting ownership and permissions."
-sudo chown -R keystone:keystone /var/www/cgi-bin/keystone
-sudo chmod 755 /var/www/cgi-bin/keystone/*
 
 echo "Restarting apache."
 sudo service apache2 restart
 
 echo "Removing default SQLite database."
 sudo rm -f /var/lib/keystone/keystone.db
-
-sudo rm "$HOME/keystone.py"
 
 #------------------------------------------------------------------------------
 # Configure keystone services and API endpoints
@@ -139,7 +148,8 @@ sudo rm "$HOME/keystone.py"
 
 echo "Using OS_TOKEN, OS_URL for authentication."
 export OS_TOKEN=$ADMIN_TOKEN
-export OS_URL=http://controller-mgmt:35357/v2.0
+export OS_URL=http://controller-mgmt:35357/v3
+export OS_IDENTITY_API_VERSION=3
 
 echo "Creating keystone service."
 openstack service create \
@@ -148,12 +158,14 @@ openstack service create \
     identity
 
 echo "Creating endpoints for keystone."
-openstack endpoint create \
-    --publicurl http://controller-mgmt:5000/v2.0 \
-    --internalurl http://controller-mgmt:5000/v2.0 \
-    --adminurl http://controller-mgmt:35357/v2.0 \
-    --region "$REGION" \
-    identity
+openstack endpoint create --region RegionOne \
+    identity public http://controller:5000/v2.0
+
+openstack endpoint create --region RegionOne \
+    identity internal http://controller:5000/v2.0
+
+openstack endpoint create --region RegionOne \
+    identity admin http://controller:35357/v2.0
 
 #------------------------------------------------------------------------------
 # Configure keystone users, tenants and roles
@@ -164,12 +176,12 @@ openstack endpoint create \
 wait_for_keystone
 
 echo "Creating admin project."
-openstack project create \
+openstack project create --domain default \
     --description "Admin Project" \
     "$ADMIN_PROJECT_NAME"
 
 echo "Creating admin user."
-openstack user create \
+openstack user create --domain default \
     --password "$ADMIN_PASSWORD" \
     "$ADMIN_USER_NAME"
 
@@ -183,17 +195,17 @@ openstack role add \
     "$ADMIN_ROLE_NAME"
 
 echo "Creating service project."
-openstack project create \
+openstack project create --domain default \
     --description "Service Project" \
     "$SERVICE_PROJECT_NAME"
 
 echo "Creating demo project."
-openstack project create \
+openstack project create --domain default \
     --description "Demo Project" \
     "$DEMO_PROJECT_NAME"
 
 echo "Creating demo user."
-openstack user create \
+openstack user create --domain default \
     --password "$DEMO_PASSWORD" \
     "$DEMO_USER_NAME"
 
@@ -227,16 +239,7 @@ done
 # From this point on, we are going to use keystone for authentication
 unset OS_TOKEN OS_URL
 
-echo "Requesting an authentication token."
-openstack \
-    --os-auth-url http://controller:35357 \
-    --os-project-name "$ADMIN_PROJECT_NAME" \
-    --os-username "$ADMIN_USER_NAME" \
-    --os-auth-type password \
-    --os-password "$ADMIN_PASSWORD" \
-    token issue
-
-echo "Requesting an authentication token using the version 3 API."
+echo "Requesting an authentication token as an admin user."
 openstack \
     --os-auth-url http://controller:35357 \
     --os-project-domain-id default \

@@ -11,10 +11,11 @@ indicate_current_auto
 
 #------------------------------------------------------------------------------
 # Set up OpenStack Compute (nova) for compute node.
-# http://docs.openstack.org/kilo/install-guide/install/apt/content/ch_nova.html#nova-compute-install
+# http://docs.openstack.org/liberty/install-guide-ubuntu/nova-compute-install.html
 #------------------------------------------------------------------------------
 
 echo "Installing nova for compute node."
+#LIBTODO check the KVM status again
 # We can't use KVM inside VirtualBox.
 sudo apt-get install -y nova-compute-qemu sysfsutils
 
@@ -47,18 +48,34 @@ iniset_sudo $conf keystone_authtoken project_name "$SERVICE_PROJECT_NAME"
 iniset_sudo $conf keystone_authtoken username "$nova_admin_user"
 iniset_sudo $conf keystone_authtoken password "$nova_admin_password"
 
+#LIBTODO address "Comment out or remove any other options in the
+#LIBTODO [keystone_authtoken] section."
+
 iniset_sudo $conf DEFAULT my_ip "$(hostname_to_ip compute-mgmt)"
 
-iniset_sudo $conf DEFAULT vnc_enabled True
-iniset_sudo $conf DEFAULT vncserver_listen 0.0.0.0
-iniset_sudo $conf DEFAULT vncserver_proxyclient_address compute-mgmt
-iniset_sudo $conf DEFAULT novncproxy_base_url http://"$(hostname_to_ip controller-api)":6080/vnc_auto.html
+#LIB new network config in the DEFAULT section
+
+initset_sudo $conf DEFAULT network_api_class nova.network.neutronv2.api.API
+initset_sudo $conf DEFAULT security_group_api neutron
+initset_sudo $conf DEFAULT linuxnet_interface_driver nova.network.linux_net.NeutronLinuxBridgeInterfaceDriver
+initset_sudo $conf DEFAULT firewall_driver nova.virt.firewall.NoopFirewallDriver
+
+#LIB the VNC config has its own [vnc] section
+
+iniset_sudo $conf vnc vnc_enabled True
+iniset_sudo $conf vnc vncserver_listen 0.0.0.0
+iniset_sudo $conf vnc vncserver_proxyclient_address compute-mgmt
+iniset_sudo $conf vnc novncproxy_base_url http://"$(hostname_to_ip controller-api)":6080/vnc_auto.html
 
 iniset_sudo $conf glance host controller-mgmt
 
 iniset_sudo $conf glance oslo_concurrency /var/lib/nova/tmp
 
 iniset_sudo $conf DEFAULT verbose True
+
+#LIBTODO I don't think this is fully tested.
+#LIBTODO If there is HW acceleration, virt_type = kvm is set
+#LIBTODO But at the beginning of this script, we didn't install KVM
 
 # Configure nova-compute.conf
 conf=/etc/nova/nova-compute.conf

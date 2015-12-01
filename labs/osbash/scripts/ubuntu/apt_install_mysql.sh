@@ -57,6 +57,5 @@ echo "Restarting MySQL service."
 # Close the file descriptor or the script will hang due to open ssh connection
 sudo service mysql restart 2>/dev/null
 
-# TODO(rluethi) do we need mysql_secure_installation?
-# XXX --use-default only in MySQL 5.7.4+ (Ubuntu 12.04 LTS: MySQL 5.5)
+# TODO(rluethi,psalunke) do we need mysql_secure_installation?
 # mysql_secure_installation --use-default

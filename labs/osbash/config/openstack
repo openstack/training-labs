@@ -1,14 +1,14 @@
 # This file contains OpenStack configuration data. It is used by both
 # host (osbash, Windows batch) and VM guest scripts.
 
-# one of: icehouse, juno, kilo
-: ${OPENSTACK_RELEASE:=kilo}
+# one of: Icehouse(EOL), Juno, Kilo, Liberty
+: ${OPENSTACK_RELEASE:=liberty}
 
 # CirrOS image URL
 CIRROS_URL="http://download.cirros-cloud.net/0.3.3/cirros-0.3.3-x86_64-disk.img"
 
 #------------------------------------------------------------------------------
-# http://docs.openstack.org/kilo/install-guide/install/apt/content/ch_basic_environment.html#basics-networking
+# http://docs.openstack.org/liberty/install-guide-ubuntu/environment-networking.html
 #------------------------------------------------------------------------------
 
 # Networks used by OpenStack training-labs setup

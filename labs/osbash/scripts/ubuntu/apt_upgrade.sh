@@ -9,13 +9,15 @@ indicate_current_auto
 
 exec_logfile
 
-# XXX We assume that apt_init.sh set up repos and updated the apt index files
+# Note: We assume that apt_init.sh set up repos and updated the apt index files
 
 # Upgrade installed packages and the kernel
 sudo DEBIAN_FRONTEND=noninteractive apt-get -y upgrade
 sudo apt-get -y dist-upgrade
 
 # XXX Not a great location for Vagrant specific code
+# TODO: Remove vagrant specific information and also
+# investigate if virtualbox-guest-dkms package is required.
 if [[ $VM_SHELL_USER = vagrant ]]; then
     init_os_ident
     if is_ubuntu; then

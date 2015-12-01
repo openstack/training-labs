@@ -10,8 +10,11 @@ indicate_current_auto
 
 #------------------------------------------------------------------------------
 # Set up Block Storage service controller (cinder controller node)
-# http://docs.openstack.org/kilo/install-guide/install/apt/content/cinder-install-controller-node.html
+# http://docs.openstack.org/liberty/install-guide-ubuntu/cinder-controller-install.html
 #------------------------------------------------------------------------------
+
+#####################################################################
+#LIB Prerequisites
 
 echo "Setting up database for cinder."
 setup_database cinder
@@ -24,8 +27,11 @@ cinder_admin_password=$(service_to_user_password cinder)
 # Wait for keystone to come up
 wait_for_keystone
 
+#LIB --domain parameter now mandatory
+
 echo "Creating cinder user."
 openstack user create \
+    --domain default \
     --password "$cinder_admin_password" \
     "$cinder_admin_user"
 
@@ -46,19 +52,49 @@ openstack service create \
     --description "OpenStack Block Storage v2" \
     volumev2
 
-openstack endpoint create \
-    --publicurl 'http://controller-api:8776/v1/%(tenant_id)s' \
-    --adminurl 'http://controller-mgmt:8776/v1/%(tenant_id)s' \
-    --internalurl 'http://controller-mgmt:8776/v1/%(tenant_id)s' \
-    --region "$REGION" \
-    volume
+#LIB new way of creating endpoints.
+#LIB This is the old way, up until Kilo:
+#LIB
+#LIB openstack endpoint create \
+#LIB     --publicurl 'http://controller-api:8776/v1/%(tenant_id)s' \
+#LIB     --adminurl 'http://controller-mgmt:8776/v1/%(tenant_id)s' \
+#LIB     --internalurl 'http://controller-mgmt:8776/v1/%(tenant_id)s' \
+#LIB     --region "$REGION" \
+#LIB     volume
+#LIB
+#LIB openstack endpoint create \
+#LIB     --publicurl 'http://controller-api:8776/v2/%(tenant_id)s' \
+#LIB     --adminurl 'http://controller-mgmt:8776/v2/%(tenant_id)s' \
+#LIB     --internalurl 'http://controller-mgmt:8776/v2/%(tenant_id)s' \
+#LIB     --region "$REGION" \
+#LIB     volumev2
 
 openstack endpoint create \
-    --publicurl 'http://controller-api:8776/v2/%(tenant_id)s' \
-    --adminurl 'http://controller-mgmt:8776/v2/%(tenant_id)s' \
-    --internalurl 'http://controller-mgmt:8776/v2/%(tenant_id)s' \
-    --region "$REGION" \
-    volumev2
+    --region RegionOne \
+    volume public http://controller-api:8776/v1/%\(tenant_id\)s
+
+openstack endpoint create \
+    --region RegionOne \
+    volume internal http://controller-mgmt:8776/v1/%\(tenant_id\)s
+
+openstack endpoint create \
+    --region RegionOne \
+    volume admin http://controller-mgmt:8776/v1/%\(tenant_id\)s
+
+openstack endpoint create \
+    --region RegionOne \
+    volumev2 public http://controller-api:8776/v2/%\(tenant_id\)s
+
+openstack endpoint create \
+    --region RegionOne \
+    volumev2 internal http://controller-mgmt:8776/v2/%\(tenant_id\)s
+
+openstack endpoint create \
+    --region RegionOne \
+    volumev2 admin http://controller-mgmt:8776/v2/%\(tenant_id\)s
+
+#####################################################################
+#LIB Install and configure components
 
 echo "Installing cinder."
 sudo apt-get install -y cinder-api cinder-scheduler python-cinderclient \
@@ -72,7 +108,8 @@ function get_database_url {
     local db_password=$(service_to_db_password cinder)
     local database_host=controller-mgmt
 
-    echo "mysql://$db_user:$db_password@$database_host/cinder"
+#LIB New: pymysql
+    echo "mysql+pymysql://$db_user:$db_password@$database_host/cinder"
 }
 
 database_url=$(get_database_url)
@@ -102,12 +139,17 @@ iniset_sudo $conf keystone_authtoken project_name "$SERVICE_PROJECT_NAME"
 iniset_sudo $conf keystone_authtoken username "$cinder_admin_user"
 iniset_sudo $conf keystone_authtoken password "$cinder_admin_password"
 
+#LIBTODO "Comment out or remove any other options in the
+#LIBTODO [keystone_authtoken] section."
+
 iniset_sudo $conf DEFAULT my_ip "$(hostname_to_ip controller-mgmt)"
 
-iniset_sudo $conf oslo_concurrency lock_path /var/lock/cinder
+#LIB Lock path /var/lock/cinder -> /var/lib/cinder/tmp
+iniset_sudo $conf oslo_concurrency lock_path /var/lib/cinder/tmp
 
 iniset_sudo $conf DEFAULT verbose True
 
+#LIBTODO should be done by cinder user?
 echo "Creating the database tables for cinder."
 sudo cinder-manage db sync
 

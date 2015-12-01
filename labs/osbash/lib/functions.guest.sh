@@ -151,6 +151,10 @@ function as_root_exec_script {
 # Set an option in an INI file
 # iniset config-file section option value
 function iniset_sudo {
+    if (($# != 4)); then
+        echo -n "ERROR: $# instead of 4 arguments for iniset: $@"
+        exit 1
+    fi
     local file=$1
     shift
     local tmpfile=$(mktemp)

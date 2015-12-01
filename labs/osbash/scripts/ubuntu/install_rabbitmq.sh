@@ -11,6 +11,9 @@ indicate_current_auto
 
 #-------------------------------------------------------------------------------
 # Install the message broker service (RabbitMQ).
+# http://docs.openstack.org/liberty/install-guide-ubuntu/environment-messaging.html
+#-------------------------------------------------------------------------------
+
 
 echo "Installing RabbitMQ."
 sudo apt-get install -y rabbitmq-server

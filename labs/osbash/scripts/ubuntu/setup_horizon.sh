@@ -9,12 +9,16 @@ indicate_current_auto
 
 #------------------------------------------------------------------------------
 # Set up OpenStack Dashboard (horizon)
-# http://docs.openstack.org/kilo/install-guide/install/apt/content/install_dashboard.html
+# http://docs.openstack.org/liberty/install-guide-ubuntu/horizon-install.html
 #------------------------------------------------------------------------------
+
+#LIB the instructions don't seem to differ between Kilo and Liberty
 
 echo "Installing horizon."
 sudo apt-get install -y openstack-dashboard
 
+#LIBTODO I don't know what the purge is about; it appears neither in
+#LIBTODO the Kilo nor the Liberty guide
 echo "Purging Ubuntu theme."
 sudo dpkg --purge openstack-dashboard-ubuntu-theme
 
@@ -23,8 +27,10 @@ function check_dashboard_settings {
 
     local auth_host=controller-mgmt
     echo "Setting OPENSTACK_HOST = \"$auth_host\"."
+#LIBTODO Why the trailing semicolon?
     sudo sed -i "s#^\(OPENSTACK_HOST =\).*#\1 \"$auth_host\";#" $dashboard_conf
 
+#LIBTODO should be set to ALLOWED_HOSTS = ['*', ]
     echo -n "Allowed hosts: "
     grep "^ALLOWED_HOSTS" $dashboard_conf
 

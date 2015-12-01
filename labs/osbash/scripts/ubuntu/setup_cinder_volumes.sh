@@ -12,7 +12,7 @@ indicate_current_auto
 
 #------------------------------------------------------------------------------
 # Set up Block Storage service (cinder).
-# http://docs.openstack.org/kilo/install-guide/install/apt/content/cinder-install-storage-node.html
+# http://docs.openstack.org/liberty/install-guide-ubuntu/cinder-storage-install.html
 #------------------------------------------------------------------------------
 
 # Get FOURTH_OCTET for this node
@@ -23,6 +23,9 @@ echo "IP address of this node's interface in management network: $MY_MGMT_IP."
 
 echo "Installing qemu support package for non-raw image types."
 sudo apt-get install -y qemu
+
+#####################################################################
+#LIB Prerequisites
 
 echo "Installing the Logical Volume Manager (LVM)."
 sudo apt-get install -y lvm2
@@ -52,6 +55,9 @@ sudo vgcreate cinder-volumes $cinder_loop_dev
 # we just set up, but scanning our block devices to find our volume group
 # is fast enough.
 
+#####################################################################
+#LIB Install and configure components
+
 echo "Installing cinder."
 sudo apt-get install -y cinder-volume python-mysqldb
 
@@ -63,7 +69,8 @@ function get_database_url {
     local db_password=$(service_to_db_password cinder)
     local database_host=controller-mgmt
 
-    echo "mysql://$db_user:$db_password@$database_host/cinder"
+#LIB New: pymysql
+    echo "mysql+pymysql://$db_user:$db_password@$database_host/cinder"
 }
 
 database_url=$(get_database_url)
@@ -92,6 +99,9 @@ iniset_sudo $conf keystone_authtoken project_name "$SERVICE_PROJECT_NAME"
 iniset_sudo $conf keystone_authtoken username "$cinder_admin_user"
 iniset_sudo $conf keystone_authtoken password "$cinder_admin_password"
 
+#LIBTODO "Comment out or remove any other options in the
+#LIBTODO [keystone_authtoken] section"
+
 iniset_sudo $conf DEFAULT my_ip "$MY_MGMT_IP"
 
 iniset_sudo $conf lvm volume_driver cinder.volume.drivers.lvm.LVMVolumeDriver
@@ -102,9 +112,13 @@ iniset_sudo $conf lvm iscsi_helper  tgtadm
 iniset_sudo $conf DEFAULT enabled_backends lvm
 iniset_sudo $conf DEFAULT glance_host controller-mgmt
 
-iniset_sudo $conf oslo_concurrency lock_path /var/lock/cinder
+#LIB Changed from /var/lock/cinder
+iniset_sudo $conf oslo_concurrency lock_path /var/lib/cinder/tmp
 
 iniset_sudo $conf DEFAULT verbose True
+
+#####################################################################
+#LIB Finalize installation
 
 echo "Restarting cinder service."
 sudo service tgt restart
@@ -114,7 +128,7 @@ sudo rm -f /var/lib/cinder/cinder.sqlite
 
 #------------------------------------------------------------------------------
 # Verify the Block Storage installation
-# http://docs.openstack.org/kilo/install-guide/install/apt/content/cinder-verify.html
+# http://docs.openstack.org/liberty/install-guide-ubuntu/cinder-verify.html
 #------------------------------------------------------------------------------
 
 echo "Verifying Block Storage installation on controller node."
@@ -135,6 +149,9 @@ done
 
 echo "cinder service-list"
 node_ssh controller-mgmt "$AUTH; cinder service-list"
+
+#####################################################################
+#LIBTODO is the hardcoded timeout of 20 safe?
 
 function check_cinder_services {
 
@@ -174,6 +191,9 @@ until node_ssh controller-mgmt "$AUTH; cinder list | grep demo-volume1" > /dev/n
     echo -n .
     sleep 1
 done
+
+#####################################################################
+#LIBTODO is the hardcoded timeout of 20 safe?
 
 function wait_for_cinder_volume {
 

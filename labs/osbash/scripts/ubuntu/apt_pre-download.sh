@@ -39,12 +39,6 @@ function get_cirros {
 }
 get_cirros
 
-function get_keystone_httpd_files {
-
-    wget --directory-prefix "$HOME" -O "keystone.py" "http://git.openstack.org/cgit/openstack/keystone/plain/httpd/keystone.py?h=stable/kilo"
-}
-get_keystone_httpd_files
-
 function apt_download {
 
     sudo apt-get install -y --download-only "$@"
@@ -54,10 +48,10 @@ function apt_download {
 # Download packages for all nodes
 
 # MySQL, RabbitMQ
-apt_download mariadb-server python-mysqldb rabbitmq-server
+apt_download mariadb-server python-pymysql rabbitmq-server
 
 # Other dependencies
-apt_download python-argparse
+apt_download python-argparse python-dev python-pip
 
 # Keystone
 apt_download keystone python-openstackclient apache2 \
@@ -71,8 +65,9 @@ apt_download nova-api nova-cert nova-conductor nova-consoleauth \
     nova-novncproxy nova-scheduler python-novaclient
 
 # Neutron Controller
-apt_download neutron-server neutron-plugin-ml2 neutron-lbaas-agent \
-    python-neutronclient
+apt_download neutron-server neutron-plugin-ml2 \
+    neutron-plugin-linuxbridge-agent neutron-dhcp-agent \
+    neutron-metadata-agent neutron-l3-agent python-neutronclient
 
 # Cinder Controller
 apt_download cinder-api cinder-scheduler python-cinderclient
@@ -84,15 +79,10 @@ apt_download openstack-dashboard
 apt_download lvm2 cinder-volume
 
 # Nova Compute
-apt_download nova-compute-qemu qemu sysfsutils
+apt_download nova-compute nova-compute-qemu qemu sysfsutils
 
 # Neutron Compute
-apt_download neutron-common neutron-plugin-ml2 \
-    neutron-plugin-openvswitch-agent openvswitch-datapath-dkms
-
-# Neutron Network
-apt_download neutron-common neutron-plugin-ml2 \
-    neutron-plugin-openvswitch-agent neutron-l3-agent neutron-dhcp-agent
+apt_download neutron-plugin-linuxbridge-agent
 
 # Heat
 apt_download heat-api heat-api-cfn heat-engine python-heatclient
