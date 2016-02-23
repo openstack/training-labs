@@ -1,0 +1,10 @@
+Code-Review+2: Pranav Salunke <dguitarbite@gmail.com>
+Code-Review+1: KATO Tomoyuki <kato.tomoyuki@jp.fujitsu.com>
+Code-Review+2: Roger Luethi <rl@patchworkscience.org>
+Workflow+1: Roger Luethi <rl@patchworkscience.org>
+Verified+2: Jenkins
+Submitted-by: Jenkins
+Submitted-at: Tue, 23 Feb 2016 17:09:14 +0000
+Reviewed-on: https://review.openstack.org/281713
+Project: openstack/training-labs
+Branch: refs/heads/master
