@@ -1,0 +1,9 @@
+Code-Review+2: Pranav Salunke <dguitarbite@gmail.com>
+Code-Review+2: Roger Luethi <rl@patchworkscience.org>
+Workflow+1: Roger Luethi <rl@patchworkscience.org>
+Verified+2: Jenkins
+Submitted-by: Jenkins
+Submitted-at: Mon, 25 Jul 2016 03:46:36 +0000
+Reviewed-on: https://review.openstack.org/305991
+Project: openstack/training-labs
+Branch: refs/heads/master
