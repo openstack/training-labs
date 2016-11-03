@@ -1,0 +1,8 @@
+Code-Review+2: Pranav Salunke <dguitarbite@gmail.com>
+Workflow+1: Pranav Salunke <dguitarbite@gmail.com>
+Verified+2: Jenkins
+Submitted-by: Jenkins
+Submitted-at: Thu, 03 Nov 2016 05:47:33 +0000
+Reviewed-on: https://review.openstack.org/393095
+Project: openstack/training-labs
+Branch: refs/heads/stable/liberty
