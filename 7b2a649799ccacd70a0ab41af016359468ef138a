@@ -1,0 +1,8 @@
+Code-Review+2: Roger Luethi <rl@patchworkscience.org>
+Workflow+1: Roger Luethi <rl@patchworkscience.org>
+Verified+2: Jenkins
+Submitted-by: Jenkins
+Submitted-at: Fri, 04 Nov 2016 04:35:00 +0000
+Reviewed-on: https://review.openstack.org/393582
+Project: openstack/training-labs
+Branch: refs/heads/stable/liberty
