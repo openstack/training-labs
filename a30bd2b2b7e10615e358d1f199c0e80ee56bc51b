@@ -1,0 +1,10 @@
+Code-Review+2: KATO Tomoyuki <kato.tomoyuki@jp.fujitsu.com>
+Code-Review+1: zhongshengping <chdzsp@163.com>
+Code-Review+2: Roger Luethi <rl@patchworkscience.org>
+Workflow+1: Roger Luethi <rl@patchworkscience.org>
+Verified+2: Jenkins
+Submitted-by: Jenkins
+Submitted-at: Wed, 22 Mar 2017 06:20:28 +0000
+Reviewed-on: https://review.openstack.org/448050
+Project: openstack/training-labs
+Branch: refs/heads/master
