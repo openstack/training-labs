@@ -1,0 +1,9 @@
+Code-Review+2: Roger Luethi <rl@patchworkscience.org>
+Code-Review+2: Alexandra Settle <a.settle@outlook.com>
+Workflow+1: Alexandra Settle <a.settle@outlook.com>
+Verified+2: Jenkins
+Submitted-by: Jenkins
+Submitted-at: Thu, 18 May 2017 16:33:58 +0000
+Reviewed-on: https://review.openstack.org/464690
+Project: openstack/training-labs
+Branch: refs/heads/master
