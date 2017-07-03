@@ -1,0 +1,9 @@
+Code-Review+2: Julen Larrucea <julenl@gmail.com>
+Code-Review+2: Chason Chan <chason.chan@foxmail.com>
+Workflow+1: Chason Chan <chason.chan@foxmail.com>
+Verified+2: Jenkins
+Submitted-by: Jenkins
+Submitted-at: Mon, 03 Jul 2017 01:52:30 +0000
+Reviewed-on: https://review.openstack.org/479612
+Project: openstack/training-labs
+Branch: refs/heads/master
