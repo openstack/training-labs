@@ -1,0 +1,8 @@
+Code-Review+2: Roger Luethi <rl@patchworkscience.org>
+Workflow+1: Roger Luethi <rl@patchworkscience.org>
+Verified+2: Jenkins
+Submitted-by: Jenkins
+Submitted-at: Tue, 18 Jul 2017 13:13:46 +0000
+Reviewed-on: https://review.openstack.org/484756
+Project: openstack/training-labs
+Branch: refs/heads/stable/newton
