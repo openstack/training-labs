@@ -1,0 +1,8 @@
+Code-Review+2: Roger Luethi <rl@patchworkscience.org>
+Workflow+1: Roger Luethi <rl@patchworkscience.org>
+Verified+2: Jenkins
+Submitted-by: Jenkins
+Submitted-at: Wed, 23 Aug 2017 15:57:08 +0000
+Reviewed-on: https://review.openstack.org/496802
+Project: openstack/training-labs
+Branch: refs/heads/stable/ocata
