@@ -1,0 +1,9 @@
+Code-Review+2: Roger Luethi <rl@patchworkscience.org>
+Code-Review+2: Chason Chan <chason.chan@foxmail.com>
+Workflow+1: Chason Chan <chason.chan@foxmail.com>
+Verified+2: Zuul
+Submitted-by: Zuul
+Submitted-at: Wed, 08 Nov 2017 02:35:18 +0000
+Reviewed-on: https://review.openstack.org/518278
+Project: openstack/training-labs
+Branch: refs/heads/master
