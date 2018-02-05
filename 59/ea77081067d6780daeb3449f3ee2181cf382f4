@@ -1,0 +1,9 @@
+Code-Review+2: Roger Luethi <rl@patchworkscience.org>
+Code-Review+2: Stephen Finucane <stephenfin@redhat.com>
+Workflow+1: Stephen Finucane <stephenfin@redhat.com>
+Verified+2: Zuul
+Submitted-by: Zuul
+Submitted-at: Mon, 05 Feb 2018 16:23:06 +0000
+Reviewed-on: https://review.openstack.org/540903
+Project: openstack/training-labs
+Branch: refs/heads/master
