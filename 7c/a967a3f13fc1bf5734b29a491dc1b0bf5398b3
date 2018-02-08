@@ -1,0 +1,8 @@
+Code-Review+2: Roger Luethi <rl@patchworkscience.org>
+Workflow+1: Roger Luethi <rl@patchworkscience.org>
+Verified+2: Zuul
+Submitted-by: Zuul
+Submitted-at: Thu, 08 Feb 2018 16:07:04 +0000
+Reviewed-on: https://review.openstack.org/542266
+Project: openstack/training-labs
+Branch: refs/heads/stable/pike
