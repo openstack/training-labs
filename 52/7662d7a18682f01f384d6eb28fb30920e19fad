@@ -1,0 +1,9 @@
+Code-Review+2: Frank Kloeker <f.kloeker@telekom.de>
+Code-Review+2: Roger Luethi <rl@patchworkscience.org>
+Workflow+1: Roger Luethi <rl@patchworkscience.org>
+Verified+2: Zuul
+Submitted-by: Zuul
+Submitted-at: Thu, 08 Feb 2018 15:53:20 +0000
+Reviewed-on: https://review.openstack.org/540289
+Project: openstack/training-labs
+Branch: refs/heads/master
