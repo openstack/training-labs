@@ -1,0 +1,9 @@
+Code-Review+2: Andreas Jaeger <jaegerandi@gmail.com>
+Code-Review+2: Roger Luethi <rl@patchworkscience.org>
+Workflow+1: Roger Luethi <rl@patchworkscience.org>
+Verified+2: Zuul
+Submitted-by: Zuul
+Submitted-at: Tue, 20 Feb 2018 12:53:08 +0000
+Reviewed-on: https://review.openstack.org/546088
+Project: openstack/training-labs
+Branch: refs/heads/master
