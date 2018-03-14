@@ -1,0 +1,8 @@
+Code-Review+2: Julen Larrucea <julenl@gmail.com>
+Workflow+1: Julen Larrucea <julenl@gmail.com>
+Verified+2: Zuul
+Submitted-by: Zuul
+Submitted-at: Wed, 14 Mar 2018 08:48:23 +0000
+Reviewed-on: https://review.openstack.org/552521
+Project: openstack/training-labs
+Branch: refs/heads/stable/ocata
