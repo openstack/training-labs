@@ -1,0 +1,8 @@
+Code-Review+2: Chason Chan <chason.chan@foxmail.com>
+Workflow+1: Chason Chan <chason.chan@foxmail.com>
+Verified+2: Zuul
+Submitted-by: Zuul
+Submitted-at: Wed, 09 May 2018 15:33:00 +0000
+Reviewed-on: https://review.openstack.org/567210
+Project: openstack/training-labs
+Branch: refs/heads/stable/queens
