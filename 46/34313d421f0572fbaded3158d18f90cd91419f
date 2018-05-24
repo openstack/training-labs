@@ -1,0 +1,9 @@
+Code-Review+1: Kim Bao Long <longkb@vn.fujitsu.com>
+Code-Review+2: Roger Luethi <rl@patchworkscience.org>
+Workflow+1: Roger Luethi <rl@patchworkscience.org>
+Verified+2: Zuul
+Submitted-by: Zuul
+Submitted-at: Thu, 24 May 2018 08:25:32 +0000
+Reviewed-on: https://review.openstack.org/569919
+Project: openstack/training-labs
+Branch: refs/heads/stable/queens
