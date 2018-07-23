@@ -1,0 +1,9 @@
+Code-Review+2: Roger Luethi <rl@patchworkscience.org>
+Code-Review+2: caoyuan <cao.yuan@99cloud.net>
+Workflow+1: caoyuan <cao.yuan@99cloud.net>
+Verified+2: Zuul
+Submitted-by: Zuul
+Submitted-at: Mon, 23 Jul 2018 05:57:33 +0000
+Reviewed-on: https://review.openstack.org/584560
+Project: openstack/training-labs
+Branch: refs/heads/master
