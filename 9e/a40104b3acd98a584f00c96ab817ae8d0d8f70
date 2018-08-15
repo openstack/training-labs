@@ -1,0 +1,9 @@
+Code-Review+2: Andreas Jaeger <jaegerandi@gmail.com>
+Code-Review+2: Petr Kovar <pkovar@redhat.com>
+Workflow+1: Petr Kovar <pkovar@redhat.com>
+Verified+2: Zuul
+Submitted-by: Zuul
+Submitted-at: Wed, 15 Aug 2018 12:59:04 +0000
+Reviewed-on: https://review.openstack.org/591757
+Project: openstack/training-labs
+Branch: refs/heads/stable/pike
