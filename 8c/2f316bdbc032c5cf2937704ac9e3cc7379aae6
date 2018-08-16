@@ -1,0 +1,9 @@
+Code-Review+2: Andreas Jaeger <jaegerandi@gmail.com>
+Code-Review+2: Frank Kloeker <f.kloeker@telekom.de>
+Workflow+1: Andreas Jaeger <jaegerandi@gmail.com>
+Verified+2: Zuul
+Submitted-by: Zuul
+Submitted-at: Thu, 16 Aug 2018 04:14:45 +0000
+Reviewed-on: https://review.openstack.org/591793
+Project: openstack/training-labs
+Branch: refs/heads/master
