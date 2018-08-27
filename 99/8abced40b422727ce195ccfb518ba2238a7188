@@ -1,0 +1,8 @@
+Code-Review+2: caoyuan <cao.yuan@99cloud.net>
+Workflow+1: caoyuan <cao.yuan@99cloud.net>
+Verified+2: Zuul
+Submitted-by: Zuul
+Submitted-at: Mon, 27 Aug 2018 07:43:15 +0000
+Reviewed-on: https://review.openstack.org/596088
+Project: openstack/training-labs
+Branch: refs/heads/master
