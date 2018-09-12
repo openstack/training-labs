@@ -1,0 +1,8 @@
+Code-Review+2: Roger Luethi <rl@patchworkscience.org>
+Workflow+1: Roger Luethi <rl@patchworkscience.org>
+Verified+2: Zuul
+Submitted-by: Zuul
+Submitted-at: Wed, 12 Sep 2018 04:07:15 +0000
+Reviewed-on: https://review.openstack.org/601511
+Project: openstack/training-labs
+Branch: refs/heads/master
