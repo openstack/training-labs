@@ -1,0 +1,9 @@
+Code-Review+2: Chason Chan <chason.chan@foxmail.com>
+Code-Review+2: Frank Kloeker <f.kloeker@telekom.de>
+Workflow+1: Frank Kloeker <f.kloeker@telekom.de>
+Verified+2: Zuul
+Submitted-by: Zuul
+Submitted-at: Fri, 21 Sep 2018 14:04:08 +0000
+Reviewed-on: https://review.openstack.org/603596
+Project: openstack/training-labs
+Branch: refs/heads/master
