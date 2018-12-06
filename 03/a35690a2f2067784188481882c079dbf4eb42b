@@ -1,0 +1,10 @@
+Code-Review+2: Stephen Finucane <stephenfin@redhat.com>
+Code-Review+1: Roger Luethi <rl@patchworkscience.org>
+Code-Review+2: caoyuan <cao.yuan@99cloud.net>
+Workflow+1: caoyuan <cao.yuan@99cloud.net>
+Verified+2: Zuul
+Submitted-by: Zuul
+Submitted-at: Thu, 06 Dec 2018 09:01:12 +0000
+Reviewed-on: https://review.openstack.org/610360
+Project: openstack/training-labs
+Branch: refs/heads/master
