@@ -1,0 +1,8 @@
+Code-Review+2: Julen Larrucea <julenl@gmail.com>
+Workflow+1: Julen Larrucea <julenl@gmail.com>
+Verified+2: Zuul
+Submitted-by: Zuul
+Submitted-at: Wed, 23 Jan 2019 13:49:41 +0000
+Reviewed-on: https://review.openstack.org/632667
+Project: openstack/training-labs
+Branch: refs/heads/master
