@@ -1,0 +1,8 @@
+Code-Review+2: Frank Kloeker <f.kloeker@telekom.de>
+Workflow+1: Frank Kloeker <f.kloeker@telekom.de>
+Verified+2: Zuul
+Submitted-by: Zuul
+Submitted-at: Wed, 03 Apr 2019 13:10:38 +0000
+Reviewed-on: https://review.openstack.org/647178
+Project: openstack/training-labs
+Branch: refs/heads/master
