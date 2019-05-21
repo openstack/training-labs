@@ -1,0 +1,9 @@
+Code-Review+2: Stephen Finucane <stephenfin@redhat.com>
+Code-Review+2: Frank Kloeker <f.kloeker@telekom.de>
+Workflow+1: Frank Kloeker <f.kloeker@telekom.de>
+Verified+2: Zuul
+Submitted-by: Zuul
+Submitted-at: Tue, 21 May 2019 13:05:30 +0000
+Reviewed-on: https://review.opendev.org/659942
+Project: openstack/training-labs
+Branch: refs/heads/master
