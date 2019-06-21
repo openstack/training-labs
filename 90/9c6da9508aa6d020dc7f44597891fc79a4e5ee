@@ -1,0 +1,9 @@
+Code-Review+2: Julen Larrucea <julenl@gmail.com>
+Code-Review+2: caoyuan <cao.yuan@99cloud.net>
+Workflow+1: caoyuan <cao.yuan@99cloud.net>
+Verified+2: Zuul
+Submitted-by: Zuul
+Submitted-at: Fri, 21 Jun 2019 02:55:06 +0000
+Reviewed-on: https://review.opendev.org/661445
+Project: openstack/training-labs
+Branch: refs/heads/master
