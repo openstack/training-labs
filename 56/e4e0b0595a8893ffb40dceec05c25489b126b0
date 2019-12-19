@@ -1,0 +1,8 @@
+Code-Review+2: Stephen Finucane <stephenfin@redhat.com>
+Workflow+1: Stephen Finucane <stephenfin@redhat.com>
+Verified+2: Zuul
+Submitted-by: Zuul
+Submitted-at: Thu, 19 Dec 2019 09:26:09 +0000
+Reviewed-on: https://review.opendev.org/698033
+Project: openstack/training-labs
+Branch: refs/heads/master
