@@ -1,0 +1,8 @@
+Code-Review+2: Andreas Jaeger <jaegerandi@gmail.com>
+Workflow+1: Andreas Jaeger <jaegerandi@gmail.com>
+Verified+2: Zuul
+Submitted-by: Zuul
+Submitted-at: Mon, 23 Mar 2020 07:54:51 +0000
+Reviewed-on: https://review.opendev.org/714355
+Project: openstack/training-labs
+Branch: refs/heads/stable/rocky
